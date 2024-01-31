@@ -1,33 +1,67 @@
 import React from "react";
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { auth, provider } from '../../config/firebase';
-import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 
 const SignUp = () => {
-    const [email, setEmail] = useState('');
-    const [name, setName] = useState('');
-    const [pass, setPass] = useState('');
+    let navigate = useNavigate(); 
 
-    console.log(auth?.currentUser?.email); // to get logged in user
+    // states
+    const [loading, setLoading] = useState(false);
 
-    const signUpUser = async () => {
+    // create refs
+    const nameRef = useRef();
+    const emailRef = useRef();
+    const passwordRef = useRef();
+    const confirmPasswordRef = useRef();
+
+    const { signup, loginWithGoogle, currUser, logout } = useAuth();
+
+    // console.log(auth?.currentUser?.email); // to get logged in user
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+        if(passwordRef.current.value !== confirmPasswordRef.current.value) {
+            return alert('Passwords do not match');
+        }
         try{
-            console.log('email: ', email, 'pass: ', pass, 'name: ', name);
-            await createUserWithEmailAndPassword(auth, email, pass)
+            setLoading(true)
+            await signup(emailRef.current.value, passwordRef.current.value);
+            console.log(emailRef.current.value, passwordRef.current.value);
             console.log('user created');
-        } catch(err) {
+            navigate('/');
+        } catch(err) { // TODO: handle case if account exists
             console.error(err);
         }
+        setLoading(false)
     };
 
-    const signUpUserWithGoogle = async () => {
-        try {
-            await signInWithPopup(auth, provider);
+    const handleSubmitWithGoogle = async e => {
+        e.preventDefault();
+        try{
+            setLoading(true)
+            await loginWithGoogle(auth, provider);
+            console.log('user created');
+            navigate('/');
         } catch(err) {
             console.error(err);
         }
-    };
+        setLoading(false)
+    }
+
+    const handleLogOut = async e => {
+        e.preventDefault();
+        try{
+            setLoading(true)
+            await logout(auth);
+            console.log('user logged out');
+        } catch(err) {
+            console.error(err);
+        }
+        setLoading(false)
+    }
 
     return (
         <div className="container">
@@ -38,30 +72,40 @@ const SignUp = () => {
 
             <div>
                 <svg> logo </svg>
+                current user: {currUser?.email}
                 <p> Keep track of your work</p>
-                <div className="signup-form">
+                <form onSubmit={handleSubmit} className="signup-form">
                     <div className="input-group">
                         <label htmlFor="name">Name</label>
-                        <input type="text" id="name" placeholder="Your name"  onChange={e => setName(e.target.value)}/>
+                        <input type="text" id="name" placeholder="Your name" ref={nameRef} />
                     </div>
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
-                        <input type="email" id="email" placeholder="Your email"  onChange={e => setEmail(e.target.value)}/>
+                        <input type="email" id="email" placeholder="Your email" ref={emailRef} />
                     </div>
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" placeholder="Your password" onChange={e => setPass(e.target.value)}/>
+                        <input type="password" id="password" placeholder="Your password" ref={passwordRef}/>
                     </div>
                     <div className="input-group">
-                        <button onClick={signUpUser}>Sign Up</button>
+                        <label htmlFor="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" placeholder="Your password" ref={confirmPasswordRef}/>
                     </div>
-                    <hr />
                     <div className="input-group">
-                        <button onClick={signUpUserWithGoogle}>Sign Up with Google</button>
+                        <button disabled={loading} type="submit" > Sign Up </button>
                     </div>
+                </form>
+                
+                <hr />
+                <div className="input-group">
+                    <button disabled={loading} onClick={handleSubmitWithGoogle}>Sign Up with Google</button>
                 </div>
 
-                <p>Already have an account? <a href="/">Log In</a></p>
+                <div className="input-group">
+                    <button disabled={loading} onClick={handleLogOut}>Log out</button>
+                </div>
+
+                <p>Already have an account? <Link to='/login'>Log in</Link> </p>
             </div>
                 
         </div>

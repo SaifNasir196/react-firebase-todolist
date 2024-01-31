@@ -1,5 +1,5 @@
-import './App.css';
-import {Auth} from './components/auth.js';
+
+import {Auth} from './components/Auth/auth.js';
 import {db, auth} from './config/firebase.js';
 import { getDocs, collection, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -33,7 +33,7 @@ function App() {
 
   useEffect(() => {
     getTaskList();
-  }, [])
+  }, []) 
 
   const onSubmitTask = async () => {
     try {

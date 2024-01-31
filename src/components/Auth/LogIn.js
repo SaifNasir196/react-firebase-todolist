@@ -1,32 +1,54 @@
 import React from "react";
-import { useState } from 'react';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { useState, useRef } from 'react';
 import { auth, provider } from '../../config/firebase';
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 
 const LogIn = () => {
+    let navigate = useNavigate(); 
 
-    const [email, setEmail] = useState('');
-    const [pass, setPass] = useState('');
+    // states
+    const [loading, setLoading] = useState(false);
 
-    const LogInUser = async () => {
+    // create refs
+    const emailRef = useRef();
+    const passwordRef = useRef();
+
+    const { login, loginWithGoogle, currUser } = useAuth();
+
+
+
+    const handleSubmit = async e => {
+        e.preventDefault();
         try{
-            await signInWithEmailAndPassword(auth, email, pass)
+            setLoading(true)
+            console.log(emailRef.current.value, passwordRef.current.value);
+            await login(emailRef.current.value, passwordRef.current.value);
             console.log('user logged in');
-        } catch(err) {
+            navigate('/');
+        } catch(err) { // TODO: handle case if no account exists
             console.error(err);
+        setLoading(false)
         }
     };
 
-    const signUpUserWithGoogle = async () => {
+    const handleSubmitWithGoogle = async e => {
+        e.preventDefault();
         try {
-            await signInWithPopup(auth, provider);
+            setLoading(true)
+            await loginWithGoogle(auth, provider);
+            console.log('user logged in');
+            navigate('/');
         } catch(err) {
             console.error(err);
+        setLoading(false)
         }
     };
 
-    console.log(auth?.currentUser?.email); // to get logged in user
+    // console.log(auth?.currentUser?.email); // to get logged in user
+
+
     return (
         <div className="container">
             <div className="image login-img">
@@ -36,26 +58,30 @@ const LogIn = () => {
             <div>
 
                 <svg> logo </svg>
+                current user: {currUser?.email}
+
                 <p> Nice to see you again</p>
-                <div className="login-form">
+
+                <form onSubmit={handleSubmit} className="login-form">
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter your email"  onChange={e => setEmail(e.target.value)}/>
+                        <input type="email" id="email" placeholder="Enter your email" ref={emailRef} />
                     </div>
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter your password" onChange={e => setPass(e.target.value)} />
+                        <input type="password" id="password" placeholder="Enter your password" ref={passwordRef} />
                     </div>
                     <div className="input-group">
-                        <button  onClick={LogInUser}>Log In</button>
+                        <button disabled={loading} type="submit">Log In</button>
                     </div>
+                </form>
+
                     <hr />
                     <div className="input-group">
-                        <button onClick={signUpUserWithGoogle}>Log In with Google</button>
+                        <button disabled={loading} onClick={handleSubmitWithGoogle}>Log In with Google</button>
                     </div>
-                </div>
 
-                <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+                <p>Don't have an account? <Link to='/signup'>Sign up</Link> </p>
             </div>
             
             
