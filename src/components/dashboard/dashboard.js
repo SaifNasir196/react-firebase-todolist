@@ -1,13 +1,10 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import Popup from 'reactjs-popup';
-import { collection, getDocs, addDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db, auth } from '../../config/firebase.js';
-
+// import { useState, useEffect } from "react";
 import TaskList from "./TaskList.js";
 
 
 const Dashboard = () => {
+    console.log('at dashboard');
 
     return (
         
@@ -24,7 +21,7 @@ const Dashboard = () => {
 
             </div>
 
-
+            {/* dashboard body */}
             <div className="dashboard-body">
                 <TaskList name="UrgImp"/>
                 <TaskList name="UrgUnimp"/>

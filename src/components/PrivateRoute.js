@@ -1,10 +1,26 @@
 import { Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext"
+import { auth } from "../config/firebase";
 
 const PrivateRoute = ({ children }) => {
-    const { currentUser } = useAuth();
-    console.log(currentUser);
-    return currentUser ? children : <Navigate to="/login" />;
+    const { currUser } = useAuth();
+    const [authResolved, setAuthResolved] = useState(false);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setAuthResolved(true);
+        });
+        return unsubscribe;
+    }, []);
+
+    if (!authResolved) {
+        // You might want to display a loading indicator here
+        return null;
+    }
+
+
+    return currUser ? children : <Navigate to="/login" />;
 }
 
-export default PrivateRoute;
+export default PrivateRoute; 

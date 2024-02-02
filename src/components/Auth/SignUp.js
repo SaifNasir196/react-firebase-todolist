@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useRef } from 'react';
-import { auth, provider } from '../../config/firebase';
+import { auth } from '../../config/firebase';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -19,7 +19,6 @@ const SignUp = () => {
 
     const { signup, loginWithGoogle, currUser, logout } = useAuth();
 
-    // console.log(auth?.currentUser?.email); // to get logged in user
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -31,6 +30,7 @@ const SignUp = () => {
             await signup(emailRef.current.value, passwordRef.current.value);
             console.log(emailRef.current.value, passwordRef.current.value);
             console.log('user created');
+            console.log('in signup ' + auth?.currentUser?.email); // to get logged in user
             navigate('/');
         } catch(err) { // TODO: handle case if account exists
             console.error(err);
@@ -42,7 +42,7 @@ const SignUp = () => {
         e.preventDefault();
         try{
             setLoading(true)
-            await loginWithGoogle(auth, provider);
+            await loginWithGoogle();
             console.log('user created');
             navigate('/');
         } catch(err) {
@@ -55,7 +55,7 @@ const SignUp = () => {
         e.preventDefault();
         try{
             setLoading(true)
-            await logout(auth);
+            await logout();
             console.log('user logged out');
         } catch(err) {
             console.error(err);
