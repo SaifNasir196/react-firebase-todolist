@@ -3,6 +3,9 @@ import { useState, useRef } from 'react';
 import { auth } from '../../config/firebase';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import TextField from '@mui/material/TextField';
+import styles from '../../static/Auth.module.css';
+
 
 
 const SignUp = () => {
@@ -17,11 +20,12 @@ const SignUp = () => {
     const passwordRef = useRef();
     const confirmPasswordRef = useRef();
 
-    const { signup, loginWithGoogle, currUser, logout } = useAuth();
+    const { signup, loginWithGoogle } = useAuth();
 
 
     const handleSubmit = async e => {
         e.preventDefault();
+        console.log('in signup');
         if(passwordRef.current.value !== confirmPasswordRef.current.value) {
             return alert('Passwords do not match');
         }
@@ -51,19 +55,46 @@ const SignUp = () => {
         setLoading(false)
     }
 
-    const handleLogOut = async e => {
-        e.preventDefault();
-        try{
-            setLoading(true)
-            await logout();
-            console.log('user logged out');
-        } catch(err) {
-            console.error(err);
-        }
-        setLoading(false)
-    }
+    // const handleLogOut = async e => {
+    //     e.preventDefault();
+    //     try{
+    //         setLoading(true)
+    //         await logout();
+    //         console.log('user logged out');
+    //     } catch(err) {
+    //         console.error(err);
+    //     }
+    //     setLoading(false)
+    // }
 
     return (
+        <>
+            <div className={ `${styles.formContainer} ${styles.signUpContainer}`}>
+                <form onSubmit={handleSubmit} className={styles.formStyle}>
+                    <h1 className={styles.head1}>Create Account</h1>
+                    <div className={`${styles.socialContainer}`}>
+                        <a href="#" className="social">
+                            <i className="fab fa-facebook-f" />
+                        </a>
+                        <a href="#" className="social">
+                            <i className="fab fa-google-plus-g" />
+                        </a>
+                        <a href="#" className="social">
+                            <i className="fab fa-linkedin-in" />
+                        </a>
+                    </div>
+                    <span>or use your email for registration</span>
+                    <TextField ref={emailRef} margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus InputProps={{ style: { borderRadius: 10} }}/>
+                    <TextField ref={passwordRef} margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" InputProps={{ style: { borderRadius: 10} }}/>
+                    <TextField ref={confirmPasswordRef} margin="normal" required fullWidth name="confirmpassword" label="Confirm Password" type="password" id="confirmpassword" InputProps={{ style: { borderRadius: 10} }}/>
+
+                    <button type="submit" disabled={loading} className={styles.btn}>Sign Up</button>
+                </form>
+            </div>
+
+        
+        
+{/*         
         <div className="container">
 
             <div className="image signup-img">
@@ -108,7 +139,9 @@ const SignUp = () => {
                 <p>Already have an account? <Link to='/login'>Log in</Link> </p>
             </div>
                 
-        </div>
+        </div> */}
+
+        </>
     );
 }
 

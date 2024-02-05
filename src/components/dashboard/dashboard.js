@@ -1,6 +1,8 @@
 import React from "react";
 // import { useState, useEffect } from "react";
 import TaskList from "./TaskList.js";
+import Navbar from "../Navbar.js";
+import { Grid } from "@mui/material";
 
 
 const Dashboard = () => {
@@ -9,26 +11,18 @@ const Dashboard = () => {
     return (
         
         <div className="dashboard">
-            {/* dashboard header */}
-            <div className="dashboard-header">
-                {/* TODO: add search feature */}
-                <span>search feature</span>
-                <button className="add-task">Add Task</button>
-                {/* notifs */}
-                <button className="notifications">Notifs</button>
-                {/* user account */}
-                <button className="my-account">Account</button>
-
-            </div>
+            {/* navbar */}
+            <Navbar />
+            
 
             {/* dashboard body */}
-            <div className="dashboard-body">
-                <TaskList name="UrgImp"/>
-                <TaskList name="UrgUnimp"/>
-                <TaskList name="NonUrgImp"/>
-                <TaskList name="NonUrgUnimp"/>
+            <Grid container direction={'row'} className="dashboard-body" justifyContent={'center'} gap={10} mt={5} mb={5} >
+                <TaskList name="urgimp"/>
+                <TaskList name="urgunimp"/>
+                <TaskList name="nonurgimp"/>
+                <TaskList name="nonurgunimp" />
 
-            </div>
+            </Grid>
 
         </div>
     )

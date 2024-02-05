@@ -1,13 +1,14 @@
 import React from "react";
 import { useState, useRef } from 'react';
 import { auth, provider } from '../../config/firebase';
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import TextField from '@mui/material/TextField';
+import styles from '../../static/Auth.module.css';
 
 
 const LogIn = () => {
     let navigate = useNavigate(); 
-
     // states
     const [loading, setLoading] = useState(false);
 
@@ -17,13 +18,11 @@ const LogIn = () => {
 
     const { login, loginWithGoogle, currUser } = useAuth();
 
-
-
     const handleSubmit = async e => {
         e.preventDefault();
         try{
             setLoading(true)
-            console.log(emailRef.current.value, passwordRef.current.value);
+            console.log("user details: ", emailRef.current.value, passwordRef.current.value);
             await login(emailRef.current.value, passwordRef.current.value);
             console.log('user logged in');
             navigate('/');
@@ -45,47 +44,28 @@ const LogIn = () => {
         setLoading(false)
         }
     };
-
-    // console.log(auth?.currentUser?.email); // to get logged in user
-
-
     return (
-        <div className="container">
-            <div className="image login-img">
-                <img alt="anonymous" />
-            </div>
+        <div className = {`${styles.signInContainer} ${styles.formContainer}`}>
+            <form onSubmit={handleSubmit} className={styles.formStyle} >
+                <h1 className={styles.head1}>Sign in</h1>
+                <div className= {styles.socialContainer}>
+                    <a href="#" className="social">
+                        <i className="fab fa-facebook-f" />
+                    </a>
+                    <a href="#" className="social">
+                        <i className="fab fa-google-plus-g" />
+                    </a>
+                    <a href="#" className="social">
+                        <i className="fab fa-linkedin-in" />
+                    </a>
+                </div>
+                <span>or use your account</span>
+                <TextField inputRef={emailRef} margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus InputProps={{ style: { borderRadius: 10} }}/>
+                <TextField inputRef={passwordRef} margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" InputProps={{ style: { borderRadius: 10} }}/>
 
-            <div>
-
-                <svg> logo </svg>
-                current user: {currUser?.email}
-
-                <p> Nice to see you again</p>
-
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className="input-group">
-                        <label htmlFor="email">Email</label>
-                        <input type="email" id="email" placeholder="Enter your email" ref={emailRef} />
-                    </div>
-                    <div className="input-group">
-                        <label htmlFor="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter your password" ref={passwordRef} />
-                    </div>
-                    <div className="input-group">
-                        <button disabled={loading} type="submit">Log In</button>
-                    </div>
-                </form>
-
-                    <hr />
-                    <div className="input-group">
-                        <button disabled={loading} onClick={handleSubmitWithGoogle}>Log In with Google</button>
-                    </div>
-
-                <p>Don't have an account? <Link to='/signup'>Sign up</Link> </p>
-            </div>
-            
-            
-            
+                <a href="#">Forgot your password?</a>
+                <button type="submit" disabled={loading} className={styles.btn}>Sign In</button>
+            </form>
         </div>
     );
 }

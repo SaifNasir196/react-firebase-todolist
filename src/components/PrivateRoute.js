@@ -19,7 +19,6 @@ const PrivateRoute = ({ children }) => {
         return null;
     }
 
-
     return currUser ? children : <Navigate to="/login" />;
 }
 
